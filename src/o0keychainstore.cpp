@@ -8,11 +8,12 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QBuffer>
 #include <QtCore/QEventLoop>
+#include <QSettings>
 
 using namespace QKeychain;
 
-o0keyChainStore::o0keyChainStore(const QString& app,const QString& name,QObject *parent):
-    O0AbstractStore(parent), app_(app),name_(name),pairs_()
+o0keyChainStore::o0keyChainStore(const QString& app,const QString& name, QSettings* settings, QObject *parent):
+    O0AbstractStore(parent), app_(app),name_(name),pairs_(), settings(settings)
 {
 }
 
@@ -60,6 +61,7 @@ bool o0keyChainStore::isEntryNotFoundError(int errorCode) {
 }
 
 void o0keyChainStore::initJob(QKeychain::Job &job) const {
+    job.setSettings(settings);
     job.setAutoDelete(false);
     job.setKey(name_);
 }

@@ -12,6 +12,7 @@
 #include "o2reply.h"
 
 class O2;
+class QHttpMultiPart;
 
 /// Makes authenticated requests.
 class O0_EXPORT O2Requestor: public QObject {
@@ -28,12 +29,17 @@ public Q_SLOTS:
 
     /// Make a POST request.
     /// @return Request ID or -1 if there are too many requests in the queue.
-    int post(const QNetworkRequest &req, const QByteArray &data);
+    int post(const QNetworkRequest &req, QByteArray* data);
 
     /// Make a PUT request.
     /// @return Request ID or -1 if there are too many requests in the queue.
-    int put(const QNetworkRequest &req, const QByteArray &data);
+    int put(const QNetworkRequest &req, QByteArray *data);
 
+    /// Make a PUT request.
+    /// @return Request ID or -1 if there are too many requests in the queue.
+    int patch(const QNetworkRequest &req, QHttpMultiPart *data);
+
+    int post(const QNetworkRequest &req, QHttpMultiPart *data);
 Q_SIGNALS:
     /// Emitted when a request has been completed or failed.
     void finished(int id, QNetworkReply::NetworkError error, QByteArray data);
@@ -70,7 +76,8 @@ protected:
     QNetworkAccessManager *manager_;
     O2 *authenticator_;
     QNetworkRequest request_;
-    QByteArray data_;
+    const QByteArray *data_;
+    QHttpMultiPart *multipart_;
     QNetworkReply *reply_;
     Status status_;
     int id_;
@@ -78,6 +85,7 @@ protected:
     QUrl url_;
     O2ReplyList timedReplies_;
     QNetworkReply::NetworkError error_;
+    bool didRetryForAuthError;
 };
 
 #endif // O2REQUESTOR_H

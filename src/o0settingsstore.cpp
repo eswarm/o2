@@ -5,12 +5,19 @@
 #include "o0settingsstore.h"
 
 static quint64 getHash(const QString &encryptionKey) {
+	/*
+    QByteArray hashArray = QCryptographicHash::hash(encryptionKey.toLatin1(), QCryptographicHash::Sha1).toHex();
+    if(hashArray.length() > 8) {
+        hashArray = hashArray.left(8);
+    }
+    bool conversion;
+    return hashArray.toULongLong(&conversion, 16);
+	*/
     return QCryptographicHash::hash(encryptionKey.toLatin1(), QCryptographicHash::Sha1).toULongLong();
 }
 
 O0SettingsStore::O0SettingsStore(const QString &encryptionKey, QObject *parent):
     O0AbstractStore(parent), crypt_(getHash(encryptionKey)) {
-    settings_ = new QSettings(this);
 }
 
 O0SettingsStore::O0SettingsStore(QSettings *settings, const QString &encryptionKey, QObject *parent):
